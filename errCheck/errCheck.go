@@ -9,8 +9,8 @@ func UsageErr() {
 
 }
 
-func Checkcolor(c string) string{
-	switch c{
+func Checkcolor(c string) string {
+	switch c {
 	case "red":
 		return "\033[31m"
 	case "green":
