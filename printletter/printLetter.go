@@ -1,68 +1,74 @@
 package printletter
 
 import (
-	"fmt"
-	"os"
-	"log"
 	"bufio"
+	"fmt"
+	"log"
+	"os"
 	"strings"
 )
-func FineSpecial()[]int{
+
+func FineSpecial() []int {
 	Args1 := os.Args[1]
-	letter := strings.Split(os.Args[3], "," )
+	letter := strings.Split(os.Args[3], ",")
 	place := []int{}
-	var index int 
+	var index int
 	// need to do something
-	for i := 0 ; i < len(letter);i++{
-		whereLetter := strings.Split(Args1,letter[i])
-		for j := 0 ; j < len(whereLetter);j++{
-		index = index + len(whereLetter[j])+1
-			if len(letter[i]) == 1{
-				place = append(place, (index-1))
+	for i := 0; i < len(letter); i++ {
+		whereLetter := strings.Split(Args1, letter[i])
+		random := 0
+		for j := 0; j < len(whereLetter); j++ {
+			index = index + len(whereLetter[j]) + 1
+			if len(letter[i]) == 1 {
+				place = append(place, (index - 1))
 			}
 			if len(letter[i]) > 1 {
-				for ns := 0 ; ns < len(letter[i]);ns++{
-					fmt.Println(index,ns)
-					place = append(place, ((index-1)+ns))
+				if random == 0 {
+					for ln := 0; ln < len(letter[i]); ln++ {
+						place = append(place, (index-1)+ln)
+					}
+					random++
 				}
 			}
 		}
 		index = 0
+		if random != 0 {
+			place = append(place, place[len(place)-1]+1)
+		}
 	}
+
 	// now we get array that show where is speacial letter if there have 2 speacial letter it will half array is first letter and second half is second letter
-	if len(letter) > 1{
-		for i := 0; i<len(place)-1;i++{
-			for j := 0 ; j<len(place)-1;j++{
-				if place[i] > place[j]{
+	if len(letter) > 1 {
+		for i := 0; i < len(place)-1; i++ {
+			for j := 0; j < len(place)-1; j++ {
+				if place[i] > place[j] {
 					place[i], place[j] = place[j], place[i]
 				}
 			}
 		}
-		for i := 0; i < len(place)-1;i++{
-			for j := 0 ; j< len(place)-1;j++{
-				if place[i] < place[j]{
+		for i := 0; i < len(place)-1; i++ {
+			for j := 0; j < len(place)-1; j++ {
+				if place[i] < place[j] {
 					place[i], place[j] = place[j], place[i]
 				}
 			}
 		}
 	}
 	newInt := []int{}
-	for i := 0; i < len(place)-1;i++{
-		if place[i] != place[i+1]{
-			newInt = append(newInt,place[i])
+	for i := 0; i < len(place)-1; i++ {
+		if place[i] != place[i+1] {
+			newInt = append(newInt, place[i])
 		}
 	}
-	fmt.Println(newInt)
-
-return newInt
+	return newInt
 }
 
-func PrintArt(n int,s,c string) {
-	fmt.Print(Printer(n,s,c))
+func PrintArt(n int, s, c string) {
+	fmt.Print(Printer(n, s, c))
 }
 
-func Printer(n int, s, c string)string {
-		x := c
+func Printer(n int, s, c string) string {
+	x := c
 	file, err := os.Open("standard.txt")
 
 	if err != nil {
@@ -78,27 +84,34 @@ func Printer(n int, s, c string)string {
 		txtlines = append(txtlines, scanner.Text())
 	}
 	file.Close()
-	if n != 1{
+	if n != 1 {
 		x = "\033[0m"
 	}
 	var l1, l2, l3, l4, l5, l6, l7, l8 string
 	// check what letter need to color where the letter in array and add it in too Special
-	Special := FineSpecial()
+	var Special []int
+	if len(os.Args) == 4 {
+		Special = FineSpecial()
+	}
 	sp := 0
 	for i := 0; i < len(s); i++ {
 		var y int
-		// if loop to check when need to start color and when need to reset the color. 
-		if sp < len(Special){
-			if i == Special[sp] {
-				x = c //terminal that what we want
-				if len(Special) > sp{
-					sp++
+		// if loop to check when need to start color and when need to reset the color.
+		if len(os.Args) == 4 {
+			if sp < len(Special) {
+				if i == Special[sp] {
+					x = c //terminal that what we want
+					if len(Special) > sp {
+						sp++
+					}
+				} else if i != Special[sp] {
+					x = "\033[0m"
 				}
-			} else if i != Special[sp]{
+			} else {
 				x = "\033[0m"
 			}
-		} else {
-			x = "\033[0m"
+		} else if len(os.Args) == 3 {
+			x = c
 		}
 		letter := s[i]
 		DecN := int(letter - 32)
@@ -128,7 +141,7 @@ func Printer(n int, s, c string)string {
 					case 7:
 						l7 = l7 + string(x) + eachline + string("\033[0m")
 					case 8:
-						l8 = l8 + string(x) + eachline + string("\033[0m") 
+						l8 = l8 + string(x) + eachline + string("\033[0m")
 					default:
 					}
 
@@ -139,11 +152,6 @@ func Printer(n int, s, c string)string {
 		}
 	}
 
-
-
-
-	asciiArt := l1 + "\n" + l2 + "\n" + l3 + "\n" + l4 + "\n" + l5 + "\n" + l6 + "\n" + l7 + "\n" + l8 + "\n"  
+	asciiArt := l1 + "\n" + l2 + "\n" + l3 + "\n" + l4 + "\n" + l5 + "\n" + l6 + "\n" + l7 + "\n" + l8 + "\n"
 	return asciiArt
 }
-
-
