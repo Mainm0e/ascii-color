@@ -5,6 +5,7 @@ import (
 	"Color/printletter"
 	"os"
 	"strings"
+
 )
 
 func main() {
@@ -30,5 +31,5 @@ func main() {
 	} else {
 		errCheck.UsageErr()
 	}
-	printletter.FineSpecial()
+
 }
